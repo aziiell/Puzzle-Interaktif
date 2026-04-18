@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Slide Puzzle · Timer & Fireworks</title>
-  <!-- canvas-confetti untuk kembang api modern -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+  <title>Sliding Puzzle · Timer & Stat</title>
   <style>
     * {
       box-sizing: border-box;
@@ -29,7 +27,6 @@
       border-radius: 42px;
       padding: 14px 18px 24px;
       box-shadow: 0 18px 28px rgba(0, 0, 0, 0.5);
-      position: relative;
     }
 
     .puzzle-wrapper {
@@ -88,7 +85,6 @@
       box-shadow: 0 1px 0 #9b4a1a;
     }
 
-    /* info panel dengan timer & moves */
     .info-panel {
       display: flex;
       justify-content: space-between;
@@ -107,26 +103,30 @@
       backdrop-filter: blur(4px);
       box-shadow: inset 0 1px 2px #3d5a55, 0 4px 8px black;
       display: flex;
-      gap: 18px;
-      align-items: baseline;
+      gap: 20px;
     }
 
-    .moves-box, .timer-box {
-      font-size: 1.4rem;
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffda9e;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
       font-weight: bold;
       background: #00000066;
-      padding: 3px 14px;
+      padding: 2px 10px;
       border-radius: 2rem;
       color: #d9ffb8;
       font-family: monospace;
-    }
-
-    .moves-label, .timer-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #ffda9e;
-      margin-right: 8px;
-      text-transform: uppercase;
     }
 
     .game-status {
@@ -174,15 +174,15 @@
       border-radius: 40px;
     }
 
-    /* Modal ucapan selamat (popup) */
-    .congrats-modal {
+    /* Modal selamat */
+    .modal {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(5px);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -191,68 +191,57 @@
       opacity: 0;
       transition: visibility 0.2s, opacity 0.2s;
     }
-    .congrats-modal.active {
+    .modal.active {
       visibility: visible;
       opacity: 1;
     }
-    .congrats-card {
+    .modal-card {
       background: linear-gradient(135deg, #2b2e2a, #1e2a1f);
-      border-radius: 56px;
-      padding: 28px 32px;
+      border-radius: 48px;
+      padding: 24px 28px;
       text-align: center;
-      max-width: 340px;
+      max-width: 300px;
       width: 80%;
-      box-shadow: 0 25px 40px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,200,0.2);
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
       border: 1px solid #ffd966;
-      animation: pop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
     }
-    @keyframes pop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .congrats-card h2 {
-      font-size: 2rem;
-      margin: 0 0 12px 0;
+    .modal-card h2 {
+      font-size: 1.8rem;
+      margin: 0 0 12px;
       color: #ffd966;
-      text-shadow: 0 2px 5px #7a4a00;
     }
-    .congrats-card p {
-      font-size: 1.2rem;
-      margin: 12px 0;
+    .modal-card p {
+      font-size: 1rem;
+      margin: 8px 0;
       color: #f7f3cf;
     }
-    .congrats-card .stats-win {
+    .modal-stats {
       background: #00000055;
-      padding: 12px;
-      border-radius: 48px;
+      padding: 10px;
+      border-radius: 40px;
       margin: 16px 0;
       font-weight: bold;
     }
-    .close-win-btn {
+    .close-modal {
       background: #ffb347;
       border: none;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: bold;
-      padding: 8px 24px;
-      border-radius: 40px;
-      margin-top: 8px;
+      padding: 6px 20px;
+      border-radius: 30px;
       cursor: pointer;
-      box-shadow: 0 3px 0 #7a3e1a;
-    }
-    .close-win-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 #7a3e1a;
+      margin-top: 8px;
     }
 
     @media (max-width: 480px) {
       .board { gap: 4px; padding: 4px; }
       .puzzle-wrapper { padding: 8px; }
       .tile { border-radius: 12px; font-size: 1.8rem; }
-      .stats { padding: 3px 12px; gap: 10px; }
-      .moves-box, .timer-box { font-size: 1.2rem; padding: 2px 10px; }
+      .stats { padding: 4px 12px; gap: 12px; }
+      .stat-value { font-size: 1rem; padding: 1px 8px; }
       .game-status { font-size: 1rem; padding: 3px 12px; }
       button { font-size: 0.85rem; padding: 5px 14px; }
-      .congrats-card h2 { font-size: 1.6rem; }
+      .modal-card h2 { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -264,10 +253,16 @@
 
   <div class="info-panel">
     <div class="stats">
-      <div><span class="moves-label">🏆 LANGKAH</span><span class="moves-box" id="moveCounter">0</span></div>
-      <div><span class="timer-label">⏱️ WAKTU</span><span class="timer-box" id="timerDisplay">00:00</span></div>
+      <div class="stat-item">
+        <span class="stat-label">🏆 LANGKAH</span>
+        <span class="stat-value" id="moveCounter">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">⏱️ WAKTU</span>
+        <span class="stat-value" id="timerDisplay">00:00</span>
+      </div>
     </div>
-    <div class="game-status" id="gameStatusMsg">⚡ MAIN</div>
+    <div class="game-status" id="gameStatusMsg">⚡ PLAY</div>
     <button id="newGameBtn">🔄 BARU</button>
   </div>
   <div class="hint">
@@ -275,20 +270,20 @@
   </div>
 </div>
 
-<!-- Modal ucapan selamat + data langkah & timer -->
-<div id="congratsModal" class="congrats-modal">
-  <div class="congrats-card">
+<!-- Modal ucapan selamat -->
+<div id="winModal" class="modal">
+  <div class="modal-card">
     <h2>🎉 SELAMAT! 🎉</h2>
-    <p>Anda berhasil menyelesaikan puzzle!</p>
-    <div class="stats-win">
+    <p>Anda menyelesaikan puzzle!</p>
+    <div class="modal-stats">
       📊 <strong id="finalMoves">0</strong> langkah &nbsp;|&nbsp; ⏱️ <strong id="finalTime">00:00</strong>
     </div>
-    <button class="close-win-btn" id="closeCongratsBtn">Tutup ✨</button>
+    <button class="close-modal" id="closeModalBtn">Tutup</button>
   </div>
 </div>
 
 <script>
-  // ---------- KONFIGURASI PUZZLE 3x3 ----------
+  // ---------- 3x3 SLIDING PUZZLE ----------
   const SIZE = 3;
   const SOLVED_STATE = [
     [1, 2, 3],
@@ -297,44 +292,47 @@
   ];
 
   let board = [];
-  let emptyRow = 2, emptyCol = 2;
+  let emptyRow = 2;
+  let emptyCol = 2;
   let moveCount = 0;
   let gameActive = true;
   let winFlag = false;
 
   // Timer variables
-  let timerSeconds = 0;
   let timerInterval = null;
-  let timerRunning = false;
+  let timerSeconds = 0;
+  let timerStarted = false;      // apakah timer sudah berjalan (setelah gerakan pertama)
+  let gameStarted = false;       // flag untuk mencegah timer start sebelum gerakan
 
   // DOM elements
   const boardContainer = document.getElementById("puzzleBoard");
   const moveCounterSpan = document.getElementById("moveCounter");
   const timerDisplaySpan = document.getElementById("timerDisplay");
   const gameStatusSpan = document.getElementById("gameStatusMsg");
-  const congratsModal = document.getElementById("congratsModal");
+  const winModal = document.getElementById("winModal");
   const finalMovesSpan = document.getElementById("finalMoves");
   const finalTimeSpan = document.getElementById("finalTime");
 
-  // Helper: format waktu MM:SS
+  // Helper format waktu MM:SS
   function formatTime(sec) {
-    const minutes = Math.floor(sec / 60);
-    const seconds = sec % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const mins = Math.floor(sec / 60);
+    const remainSec = sec % 60;
+    return `${mins.toString().padStart(2, '0')}:${remainSec.toString().padStart(2, '0')}`;
   }
 
-  function updateTimerDisplay() {
+  function updateTimerUI() {
     timerDisplaySpan.textContent = formatTime(timerSeconds);
   }
 
-  // Mulai timer (reset jika sudah berjalan)
+  // Mulai timer (hanya dipanggil saat gerakan pertama)
   function startTimer() {
+    if (timerStarted) return;
+    timerStarted = true;
     if (timerInterval) clearInterval(timerInterval);
-    timerRunning = true;
     timerInterval = setInterval(() => {
-      if (gameActive && !winFlag) {
+      if (gameActive && !winFlag && timerStarted) {
         timerSeconds++;
-        updateTimerDisplay();
+        updateTimerUI();
       }
     }, 1000);
   }
@@ -344,16 +342,13 @@
       clearInterval(timerInterval);
       timerInterval = null;
     }
-    timerRunning = false;
   }
 
   function resetTimer() {
     stopTimer();
     timerSeconds = 0;
-    updateTimerDisplay();
-    if (gameActive && !winFlag) {
-      startTimer();
-    }
+    timerStarted = false;
+    updateTimerUI();
   }
 
   // Game logic
@@ -382,48 +377,24 @@
     return true;
   }
 
-  // 🔥 Fireworks meriah (kembang api)
-  function burstFireworks() {
-    // multiple burst untuk efek meriah
-    canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, startVelocity: 20, colors: ['#ffd966', '#ffa559', '#ff6b6b'] });
-    canvasConfetti({ particleCount: 100, spread: 100, origin: { y: 0.5, x: 0.3 }, startVelocity: 25 });
-    canvasConfetti({ particleCount: 100, spread: 100, origin: { y: 0.5, x: 0.7 }, startVelocity: 25 });
-    setTimeout(() => {
-      canvasConfetti({ particleCount: 200, spread: 120, origin: { y: 0.4 }, startVelocity: 18, decay: 0.9 });
-      canvasConfetti({ particleCount: 80, spread: 60, origin: { y: 0.7, x: 0.2 }, startVelocity: 30 });
-      canvasConfetti({ particleCount: 80, spread: 60, origin: { y: 0.7, x: 0.8 }, startVelocity: 30 });
-    }, 150);
-    setTimeout(() => {
-      canvasConfetti({ particleCount: 300, spread: 140, origin: { y: 0.5 }, startVelocity: 22, colors: ['#ffd700', '#ffaa33', '#ff884d'] });
-    }, 400);
-  }
-
-  function showWinCongratulations() {
-    // tampilkan data langkah dan waktu di modal
+  // Menampilkan modal dengan data langkah & waktu
+  function showWinModal() {
     finalMovesSpan.textContent = moveCount;
     finalTimeSpan.textContent = formatTime(timerSeconds);
-    congratsModal.classList.add("active");
-    burstFireworks();   // kembang api meriah
-    // juga tambahan efek setiap 0.6 detik sebanyak 3 kali ekstra
-    for (let i = 1; i <= 2; i++) {
-      setTimeout(() => {
-        canvasConfetti({ particleCount: 120, spread: 90, origin: { y: 0.5 }, startVelocity: 18 });
-      }, i * 400);
-    }
+    winModal.classList.add("active");
   }
 
   function handleWin() {
-    if (!gameActive) return;
+    if (!gameActive || winFlag) return;
     gameActive = false;
     winFlag = true;
-    stopTimer();          // hentikan timer
+    stopTimer();   // hentikan timer
     gameStatusSpan.innerHTML = "🏆 MENANG! 🎉";
     gameStatusSpan.style.color = "#ffec80";
-    showWinCongratulations();   // modal + kembang api + data langkah & timer
-    renderBoard();        // render ulang agar tile tidak movable
+    showWinModal();   // tampilkan ucapan selamat + data langkah & waktu
+    renderBoard();    // render ulang agar tile tidak movable
   }
 
-  // Render board dengan highlight movable (hanya jika gameActive & belum menang)
   function renderBoard() {
     boardContainer.innerHTML = "";
     for (let i = 0; i < SIZE; i++) {
@@ -476,19 +447,24 @@
     const isAdjacent = (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
     if (!isAdjacent) return false;
     
+    // 🔥 GERAKAN PERTAMA: mulai timer
+    if (!timerStarted && !winFlag && gameActive) {
+      startTimer();
+    }
+    
     if (swapWithEmpty(row, col)) {
       moveCount++;
       renderBoard();
       if (isGameWon()) {
         handleWin();
-        renderBoard(); // render final
+        renderBoard();
       }
       return true;
     }
     return false;
   }
 
-  // random valid move untuk shuffle (tidak menambah langkah)
+  // random valid move untuk shuffle (tidak menambah langkah, dan tidak memicu timer)
   function performRandomMove() {
     const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
     const neighbors = [];
@@ -508,32 +484,28 @@
     return true;
   }
 
-  // Shuffle dari solved state (puzzle selalu solvable)
-  function shuffleBoardFromSolved(moves = 200) {
+  function shuffleBoardFromSolved(moves = 180) {
     board = getSolvedBoardCopy();
     updateEmptyCoordinates(); // empty di (2,2)
     for (let i = 0; i < moves; i++) {
       performRandomMove();
     }
-    // Reset state game
+    // Reset semua state game
     gameActive = true;
     winFlag = false;
     moveCount = 0;
-    moveCounterSpan.textContent = "0";
+    // Timer di-reset (belum berjalan, menunggu gerakan pertama)
+    resetTimer();
+    timerStarted = false;
     gameStatusSpan.innerHTML = "🎲 BERMAIN";
     gameStatusSpan.style.color = "#ffeb99";
-    // Timer direset dan dimulai ulang
-    stopTimer();
-    timerSeconds = 0;
-    updateTimerDisplay();
-    startTimer();   // timer berjalan dari 0
     renderBoard();
   }
 
   function newGame() {
-    // tutup modal jika terbuka
-    congratsModal.classList.remove("active");
-    shuffleBoardFromSolved(210);  // random acak yang memadai
+    // Tutup modal jika terbuka
+    winModal.classList.remove("active");
+    shuffleBoardFromSolved(200);
   }
 
   // Event handler klik tile
@@ -548,21 +520,21 @@
     attemptMove(row, col);
   }
 
-  // Tutup modal selamat
+  // Tutup modal
   function closeModal() {
-    congratsModal.classList.remove("active");
+    winModal.classList.remove("active");
   }
 
-  // Pasang event listener
+  // Event listeners
   boardContainer.addEventListener("click", handleTileClick);
   document.getElementById("newGameBtn").addEventListener("click", () => newGame());
-  document.getElementById("closeCongratsBtn").addEventListener("click", closeModal);
-  // klik di luar modal juga bisa menutup
-  congratsModal.addEventListener("click", (e) => {
-    if (e.target === congratsModal) closeModal();
+  document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+  // Klik di luar modal juga menutup
+  winModal.addEventListener("click", (e) => {
+    if (e.target === winModal) closeModal();
   });
 
-  // START GAME
+  // Mulai game pertama kali
   shuffleBoardFromSolved(190);
 </script>
 </body>
